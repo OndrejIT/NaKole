@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtuální Cyklo Trenažér</title>
+    <title>NaKole</title>
     <style>
         * {
             margin: 0;
@@ -354,6 +354,22 @@
             width: 100%;
         }
 
+        .value-adjuster {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .value-adjuster input[type="range"] {
+            flex: 1;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 1rem;
+            min-width: 32px;
+        }
+
         /* Canvas kontejner */
         .canvas-container {
             width: 100%;
@@ -415,7 +431,8 @@
         .video-controls {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Settings toggle */
@@ -451,18 +468,37 @@
             z-index: 98;
         }
 
-        /* Settings panel */
-        .settings-panel {
+        /* Video modal */
+        .video-modal {
             position: fixed;
-            bottom: calc(25vh + 20px);
-            right: 20px;
-            max-width: 350px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 400px;
+            width: 90%;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
             z-index: 99;
         }
 
-        .settings-panel .card {
-            max-height: 60vh;
+        /* Settings panel */
+        .settings-panel {
+            position: fixed;
+            bottom: 30vh;
+            right: 80px;
+            max-width: 350px;
+            max-height: calc(70vh - 20px);
             overflow-y: auto;
+            z-index: 99;
+        }
+
+        .youtube-card {
+            z-index: 100;
+            position: relative;
+        }
+
+        .settings-panel .card {
+            max-height: none;
         }
 
         .settings-panel .settings-grid {
@@ -518,6 +554,17 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 180px;
+        }
+
+        .history-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .history-duration {
+            color: #00d4ff;
+            font-size: 0.75rem;
         }
 
         .history-count {
@@ -593,16 +640,16 @@
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">Kadence</div>
-                            <div class="stat-value rpm" :class="{ animate: rpmAnimating }">{{ rpm }}</div>
+                            <div class="stat-value rpm">{{ rpm }}</div>
                             <div class="stat-label">RPM</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">Stoupání</div>
-                            <div class="stat-value incline" :class="{ animate: inclineAnimating }">{{ incline > 0 ? '+' : '' }}{{ incline }}%</div>
+                            <div class="stat-value incline">{{ incline > 0 ? '+' : '' }}{{ incline }}%</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-label">Zátěž</div>
-                            <div class="stat-value load" :class="{ animate: loadAnimating }">{{ load }}</div>
+                            <div class="stat-value load">{{ load }}</div>
                             <div class="load-controls">
                                 <button class="load-btn" @click="decreaseLoad">−</button>
                                 <span class="load-offset">{{ loadOffset >= 0 ? '+' : '' }}{{ loadOffset }}</span>
@@ -613,12 +660,12 @@
                 </div>
 
                 <!-- Video controls - pravý horní roh -->
-                <div class="card youtube-card" v-if="videoId && playerReady">
+                <div class="card youtube-card">
                     <div class="video-controls">
-                        <button class="btn btn-secondary" @click="seekBackward">⏪ -30s</button>
-                        <button class="btn btn-success" @click="playVideo" v-if="!isPlaying">▶ Play</button>
-                        <button class="btn btn-secondary" @click="pauseVideo" v-if="isPlaying">⏸ Pause</button>
-                        <button class="btn btn-secondary" @click="seekForward">+30s ⏩</button>
+                        <button class="btn btn-secondary" @click="seekBackward" v-if="videoId && playerReady">⏪ -30s</button>
+                        <button class="btn btn-success" @click="playVideo" v-if="!isPlaying">▶ Přehrát</button>
+                        <button class="btn btn-secondary" @click="pauseVideo" v-if="isPlaying">⏸ Pauza</button>
+                        <button class="btn btn-secondary" @click="seekForward" v-if="videoId && playerReady">+30s ⏩</button>
                     </div>
                 </div>
             </div>
@@ -646,23 +693,21 @@
         </div>
         
         <!-- Nastavení tlačítko -->
-        <button class="settings-toggle" @click.stop="showSettings = !showSettings">⚙️</button>
+        <button class="settings-toggle" @click.stop="showSettings = !showSettings; showVideoModal = !showVideoModal">⚙️</button>
         
-        <!-- Backdrop pro zavření -->
-        <div class="settings-backdrop" v-if="showSettings" @click="showSettings = false"></div>
-        
-        <!-- Nastavení panel -->
-        <div class="settings-panel" v-if="showSettings" @click.stop>
+        <!-- Video Modal -->
+        <div class="settings-backdrop" v-if="showVideoModal" @click="showVideoModal = false"></div>
+        <div class="video-modal" v-if="showVideoModal" @click.stop>
             <div class="card">
-                <h2>🎬 YouTube Video</h2>
+                <h2>🎬 Vybrat video</h2>
                 <div class="youtube-input">
                     <input 
                         type="text" 
                         v-model="youtubeUrl" 
                         placeholder="YouTube URL..."
-                        @keyup.enter="loadVideo"
+                        @keyup.enter="loadVideoAndClose"
                     >
-                    <button class="btn btn-primary" @click="loadVideo">Načíst</button>
+                    <button class="btn btn-primary" @click="loadVideoAndClose">Načíst</button>
                 </div>
                 <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
                 
@@ -671,31 +716,31 @@
                     <h3>📜 Historie</h3>
                     <div class="history-list">
                         <div class="history-item" v-for="(item, index) in videoHistory" :key="item.id">
-                            <div class="history-info" @click="loadFromHistory(item)">
+                            <div class="history-info" @click="loadFromHistoryAndClose(item)">
                                 <span class="history-title">{{ item.title || item.id }}</span>
-                                <span class="history-count">▶ {{ item.playCount }}×</span>
+                                <span class="history-meta">
+                                    <span v-if="item.duration" class="history-duration">{{ formatDuration(item.duration) }}</span>
+                                    <span class="history-count">▶ {{ item.playCount }}×</span>
+                                </span>
                             </div>
                             <button class="history-delete" @click="deleteFromHistory(index)">✕</button>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="card" style="margin-top: 10px;">
+        </div>
+        
+        <!-- Backdrop pro zavření -->
+        <div class="settings-backdrop" v-if="showSettings" @click="showSettings = false"></div>
+        
+        <!-- Nastavení panel -->
+        <div class="settings-panel" v-if="showSettings" @click.stop>
+            <div class="card">
                 <h2>⚙️ Nastavení</h2>
                 <div class="settings-grid">
                     <div class="setting-item">
-                        <label>Min. stoupání: {{ minIncline }}%</label>
-                        <input type="range" v-model.number="minIncline" min="-15" max="0" step="1">
-                    </div>
-                    <div class="setting-item">
-                        <label>Max. stoupání: {{ maxIncline }}%</label>
-                        <input type="range" v-model.number="maxIncline" min="0" max="25" step="1">
-                    </div>
-                    <div class="setting-item">
                         <label>Délka tratě (čas)</label>
                         <select v-model="selectedDuration" @change="onDurationChange">
-                            <option value="5">5 minut</option>
                             <option value="15">15 minut</option>
                             <option value="30">30 minut</option>
                             <option value="45">45 minut</option>
@@ -711,11 +756,36 @@
                     </div>
                     <div class="setting-item">
                         <label>Variabilita: {{ roughness }}</label>
-                        <input type="range" v-model.number="roughness" min="1" max="10" step="1">
+                        <div class="value-adjuster">
+                            <button class="btn btn-sm" @click="roughness = Math.max(1, roughness - 1)">−</button>
+                            <input type="range" v-model.number="roughness" min="1" max="10" step="1">
+                            <button class="btn btn-sm" @click="roughness = Math.min(10, roughness + 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" v-model="useRpmLoad"> Proměnlivá zátěž (RPM)
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Min. zátěž: {{ minLoad }}</label>
+                        <div class="value-adjuster">
+                            <button class="btn btn-sm" @click="minLoad = Math.max(1, minLoad - 1)">−</button>
+                            <input type="range" v-model.number="minLoad" min="1" max="20" step="1">
+                            <button class="btn btn-sm" @click="minLoad = Math.min(20, minLoad + 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Max. zátěž: {{ maxLoad }}</label>
+                        <div class="value-adjuster">
+                            <button class="btn btn-sm" @click="maxLoad = Math.max(1, maxLoad - 1)">−</button>
+                            <input type="range" v-model.number="maxLoad" min="1" max="20" step="1">
+                            <button class="btn btn-sm" @click="maxLoad = Math.min(20, maxLoad + 1)">+</button>
+                        </div>
                     </div>
                 </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" @click="generateTrack">🔄 Pregenerovat trať</button>
+                <div class="action-buttons" style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" @click="generateTrack">🔄 Nová trať</button>
                     <button class="btn btn-secondary" @click="resetValues">↩ Reset</button>
                 </div>
             </div>
@@ -750,14 +820,17 @@
                     localStorage.setItem('videoHistory', JSON.stringify(videoHistory.value));
                 }
 
-                function addToHistory(id) {
+                function addToHistory(id, title = null, duration = null) {
                     const existing = videoHistory.value.find(v => v.id === id);
                     if (existing) {
                         existing.playCount++;
+                        if (title) existing.title = title;
+                        if (duration) existing.duration = duration;
                     } else {
                         videoHistory.value.unshift({
                             id: id,
-                            title: id,
+                            title: title || id,
+                            duration: duration,
                             playCount: 1,
                             addedAt: Date.now()
                         });
@@ -769,12 +842,48 @@
                     localStorage.setItem('lastVideoId', id);
                 }
 
+                function updateVideoMetadata() {
+                    if (!player) return;
+                    try {
+                        const videoData = player.getVideoData();
+                        const duration = player.getDuration();
+                        if (videoData && videoData.title) {
+                            addToHistory(videoId.value, videoData.title, duration);
+                        }
+                    } catch (e) {
+                        console.log('Could not get video metadata');
+                    }
+                }
+
+                function formatDuration(seconds) {
+                    if (!seconds) return '';
+                    const hrs = Math.floor(seconds / 3600);
+                    const mins = Math.floor((seconds % 3600) / 60);
+                    const secs = Math.floor(seconds % 60);
+                    if (hrs > 0) {
+                        return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    }
+                    return `${mins}:${secs.toString().padStart(2, '0')}`;
+                }
+
                 function loadFromHistory(item) {
                     item.playCount++;
                     saveVideoHistory();
                     videoId.value = item.id;
                     autoPlayOnReady = true;
                     initPlayer();
+                }
+
+                function loadVideoAndClose() {
+                    loadVideo();
+                    if (!errorMessage.value) {
+                        showVideoModal.value = false;
+                    }
+                }
+
+                function loadFromHistoryAndClose(item) {
+                    loadFromHistory(item);
+                    showVideoModal.value = false;
                 }
 
                 function deleteFromHistory(index) {
@@ -785,29 +894,37 @@
                 // Statistiky
                 const rpm = ref(75);
                 const incline = ref(0);
-                const load = ref(15);
+                const load = ref(1);
                 const loadOffset = ref(0);
                 const rpmAnimating = ref(false);
                 const inclineAnimating = ref(false);
                 const loadAnimating = ref(false);
 
                 function increaseLoad() {
-                    loadOffset.value = Math.min(15, loadOffset.value + 5);
+                    if (load.value >= 20) return;
+                    loadOffset.value = loadOffset.value + 1;
+                    load.value = Math.min(20, load.value + 1);
                 }
 
                 function decreaseLoad() {
-                    loadOffset.value = Math.max(-15, loadOffset.value - 5);
+                    if (load.value <= 1) return;
+                    loadOffset.value = loadOffset.value - 1;
+                    load.value = Math.max(1, load.value - 1);
                 }
 
                 // Nastavení
                 const minIncline = ref(-5);
                 const maxIncline = ref(15);
                 const showSettings = ref(false);
+                const showVideoModal = ref(false);
                 const showTrack = ref(true);
+                const useRpmLoad = ref(false);
+                const minLoad = ref(5);
+                const maxLoad = ref(18);
 
                 // Trať
-                const selectedDuration = ref('30');
-                const trackDuration = ref(30); // minuty
+                const selectedDuration = ref('60');
+                const trackDuration = ref(60); // minuty
                 const trackLength = computed(() => trackDuration.value * 60); // 1 bod = 1 sekunda
                 const roughness = ref(5);
                 const trackPoints = ref([]);
@@ -966,12 +1083,47 @@
                 }
 
                 function onPlayerStateChange(event) {
+                    const wasPlaying = isPlaying.value;
                     isPlaying.value = event.data === YT.PlayerState.PLAYING;
+                    
+                    // Synchronizace jízdy s videem
+                    if (event.data === YT.PlayerState.PLAYING) {
+                        // Video začalo hrát - spustit jízdu
+                        if (!tickInterval) {
+                            tickInterval = setInterval(tick, 1000);
+                        }
+                        // Aktualizovat metadata videa (název, délka)
+                        updateVideoMetadata();
+                    } else if (event.data === YT.PlayerState.PAUSED) {
+                        // Video pozastaveno - zastavit jízdu
+                        if (tickInterval) {
+                            clearInterval(tickInterval);
+                            tickInterval = null;
+                        }
+                    } else if (event.data === YT.PlayerState.ENDED) {
+                        // Video skončilo dřív než jízda - pustit od začátku
+                        if (cursorIndex.value < trackPoints.value.length - 1) {
+                            player.seekTo(0);
+                            player.playVideo();
+                        } else {
+                            // Jízda i video skončily
+                            if (tickInterval) {
+                                clearInterval(tickInterval);
+                                tickInterval = null;
+                            }
+                        }
+                    }
                 }
 
                 function playVideo() {
+                    // Zavřít modal pokud je otevřený
+                    showVideoModal.value = false;
+                    
                     if (player && playerReady.value) {
                         player.playVideo();
+                    } else {
+                        // Žádné video načtené - zobrazit modal
+                        showVideoModal.value = true;
                     }
                 }
 
@@ -1186,8 +1338,6 @@
 
                     // Update RPM (stále náhodné)
                     rpm.value = 75;
-                    rpmAnimating.value = true;
-                    setTimeout(() => rpmAnimating.value = false, 200);
 
                     // Získání aktuálního bodu z grafu - gradient přes 10 sekund pro stabilnější hodnotu
                     const lookAhead = 10;
@@ -1199,30 +1349,25 @@
                     // Hodnoty v trackPoints jsou přímo procenta stoupání, takže bereme průměrný gradient
                     const slope = (futurePoint - currentPoint) / lookAhead * 40;
                     incline.value = Math.round(Math.max(minIncline.value, Math.min(maxIncline.value, slope)));
-                    inclineAnimating.value = true;
-                    setTimeout(() => inclineAnimating.value = false, 200);
 
-                    // Update Load - realistický výpočet odporu při jízdě na kole
-                    // 1. Valivý odpor (konstantní základ ~3-5 na rovině)
-                    const rollingResistance = 4;
-                    
-                    // 2. Odpor vzduchu (roste kvadraticky s rychlostí/RPM)
-                    // Normalizace: 75 RPM = střední rychlost, nad 90 RPM výrazně roste
-                    const normalizedRpm = rpm.value / 75;
-                    const airResistance = Math.round(3 * normalizedRpm * normalizedRpm);
-                    
-                    // 3. Gravitační složka (stoupání má větší vliv než sjezd)
-                    // Stoupání: každé 1% = cca +2 zátěže
-                    // Sjezd: každé 1% = cca -1 zátěže (brzděno valivým odporem)
-                    const gravityLoad = incline.value > 0 
-                        ? incline.value * 2 
-                        : incline.value * 0.8;
-                    
-                    // Celková zátěž = součet všech složek + ruční korekce
-                    const baseLoad = Math.round(rollingResistance + airResistance + gravityLoad);
-                    load.value = Math.max(0, Math.min(30, baseLoad + loadOffset.value));
-                    loadAnimating.value = true;
-                    setTimeout(() => loadAnimating.value = false, 200);
+                    // Update Load
+                    let baseLoad;
+                    if (useRpmLoad.value) {
+                        // Proměnlivá zátěž s RPM - realistický výpočet odporu
+                        const rollingResistance = 4;
+                        const normalizedRpm = rpm.value / 75;
+                        const airResistance = Math.round(3 * normalizedRpm * normalizedRpm);
+                        const gravityLoad = incline.value > 0 
+                            ? incline.value * 2 
+                            : incline.value * 0.8;
+                        baseLoad = Math.round(rollingResistance + airResistance + gravityLoad);
+                    } else {
+                        // Jednoduchá zátěž = pouze sklon (mapovaný na rozsah minLoad-maxLoad)
+                        const slopeRange = maxIncline.value - minIncline.value;
+                        const normalizedSlope = (incline.value - minIncline.value) / (slopeRange || 1);
+                        baseLoad = Math.round(minLoad.value + normalizedSlope * (maxLoad.value - minLoad.value));
+                    }
+                    load.value = Math.max(1, Math.min(20, baseLoad + loadOffset.value));
 
                     // Posun kurzoru
                     cursorIndex.value = (cursorIndex.value + 1) % trackPoints.value.length;
@@ -1262,19 +1407,14 @@
 
                     window.onYouTubeIframeAPIReady = () => {
                         console.log('YouTube API Ready');
-                        // Načtení posledního videa
-                        const lastVideoId = localStorage.getItem('lastVideoId');
-                        if (lastVideoId) {
-                            videoId.value = lastVideoId;
-                            initPlayer();
-                        }
+                        // Zobrazit modal pro výběr videa při prvním načtení
+                        showVideoModal.value = true;
                     };
 
                     // Generování počáteční tratě
                     generateTrack();
 
-                    // Spuštění intervalu
-                    tickInterval = setInterval(tick, 1000);
+                    // Interval se spustí až při přehrání videa
 
                     // Resize handler
                     window.addEventListener('resize', drawTrack);
@@ -1310,6 +1450,7 @@
                     videoHistory,
                     loadFromHistory,
                     deleteFromHistory,
+                    formatDuration,
                     
                     // Stats
                     rpm,
@@ -1326,10 +1467,16 @@
                     minIncline,
                     maxIncline,
                     showSettings,
+                    showVideoModal,
+                    loadVideoAndClose,
+                    loadFromHistoryAndClose,
                     selectedDuration,
                     trackDuration,
                     onDurationChange,
                     roughness,
+                    useRpmLoad,
+                    minLoad,
+                    maxLoad,
                     
                     // Track
                     showTrack,
