@@ -1,0 +1,149 @@
+Vytvoř mi plně funkční demo webovou stránku v HTML/CSS/JavaScriptu s Vue.js (Vue 3 přes CDN), vše ideálně v jednom souboru index.html. Cílem je „virtuální cyklo trenažér“ s YouTube videem na pozadí a ovládacím panelem + graf tratě.
+
+0) Technologické požadavky
+
+Použij Vue.js 3 (CDN build, např. https://unpkg.com/vue@3/dist/vue.global.prod.js nebo obdobně).
+
+Bez dalších frameworků (žádný React, žádný Nuxt).
+
+Všechny logiky (stav, intervaly, generování tratě, render grafu) řeš přes Vue (data, computed, methods, lifecycle).
+
+Povolena jediná externí věc navíc: YouTube IFrame API.
+
+1) YouTube video jako pozadí
+
+V horní části UI bude:
+
+textové pole „YouTube URL“
+
+tlačítko Načíst video
+
+Po kliknutí:
+
+z URL vyparsuj videoId (podporuj formáty watch?v=, youtu.be/, shorts/, URL s parametry).
+
+přehraj video na pozadí stránky (fullscreen background, cover).
+
+video bude ztlumené, pokud možno autoplay a loop (playlist=videoId).
+
+skryj ovládací prvky, minimalizuj branding, vypni anotace (parametry playeru).
+
+Přidej tmavý overlay pro čitelnost UI.
+
+Pozn.: Autoplay může být blokovaný, takže přidej do UI tlačítko „Spustit“ nebo po první interakci uživatele video spusť.
+
+2) Panel „Virtuální trenažér“ (v popředí)
+
+Vytvoř panel (card) nad videem s těmito sekcemi:
+
+A) RPM (aktuální kadence)
+
+Zobraz „RPM: XX“ jako velké číslo.
+
+Implementuj jako náhodné číslo měnící se každou vteřinu.
+
+Rozsah např. 50–110.
+
+Přidej jemnou animaci při změně.
+
+B) Stoupání / Zátěž (simulace odporu)
+
+Zobraz „Stoupání: X %“ a/nebo „Zátěž: Y“.
+
+Každou vteřinu náhodně přičti/odečti krok (např. -2 až +2).
+
+Rozsahy:
+
+stoupání např. -5 % až +15 %
+
+zátěž např. 0–100
+
+Přidej UI:
+
+slider pro „Max stoupání“ (a ideálně i min),
+
+tlačítko „Reset“.
+
+C) Trať (generovaná) + pregenerování
+
+Generuj pole bodů tratě (např. 120 bodů), které reprezentují profil převýšení.
+
+Přidej tlačítko „Pregenerovat trať“.
+
+Přidej nastavení:
+
+délka tratě (např. 60/120/180 bodů),
+
+„drsnost“/variabilita profilu (jak moc se body mění).
+
+3) Zobrazení tratě jako čáry (line chart)
+
+Trať vykresli jako čárový graf přes Canvas (bez knihoven).
+
+Graf bude mít:
+
+baseline,
+
+křivku profilu tratě,
+
+zvýraznění „aktuální pozice“ (tečka nebo svislá čára), která se posouvá každou vteřinu dopředu; na konci se vrátí na začátek.
+
+Graf má být v moderní kartě se stínem, rounded rohy, responzivní.
+
+4) Stav a životní cyklus ve Vue
+
+Stav spravuj přes data() nebo ref():
+
+youtubeUrl, videoId, playerReady, isPlaying
+
+rpm, incline, load
+
+trackPoints, trackLength, roughness, cursorIndex
+
+Použij mounted():
+
+načti YouTube IFrame API (dynamicky vlož <script>),
+
+inicializuj intervaly pro update hodnot.
+
+Použij beforeUnmount():
+
+vyčisti intervaly a případně player.
+
+Ve watch:
+
+reaguj na změnu videoId a re-init playeru,
+
+reaguj na změnu délky/roughness a pregeneruj trať,
+
+po změně tratě překresli canvas.
+
+5) Struktura a kvalita
+
+Jeden soubor index.html:
+
+<style> pro vzhled,
+
+<div id="app"> pro Vue,
+
+<script> s Vue app.
+
+Funkce/metody:
+
+parseYouTubeUrl(url) → videoId (robustní parsing),
+
+loadVideo(), playVideo(), pauseVideo(),
+
+tick() (1× za sekundu: rpm + incline/load + posun kurzoru),
+
+generateTrack(length, roughness),
+
+drawTrack() (vykreslí canvas).
+
+Přidej validace: pokud URL neobsahuje validní videoId, ukaž error hlášku.
+
+6) Výstup
+
+Vrať kompletní kód index.html připravený ke spuštění lokálně.
+
+Na konec přidej krátké instrukce „Jak spustit“.
