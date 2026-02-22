@@ -407,6 +407,167 @@
             min-width: 32px;
         }
 
+        /* Track stats */
+        .track-stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .track-stat {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .track-stat strong {
+            color: #00d4ff;
+        }
+
+        .difficulty-bar {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+
+        .difficulty-pip {
+            width: 8px;
+            height: 12px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .difficulty-pip.active {
+            background: #4caf50;
+        }
+
+        .difficulty-pip.active.medium {
+            background: #ffc107;
+        }
+
+        .difficulty-pip.active.hard {
+            background: #ff5722;
+        }
+
+        /* Saved tracks */
+        .saved-tracks {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .saved-tracks h3 {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .saved-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .saved-item:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .saved-name {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .saved-meta {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+        }
+
+        .saved-delete {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 2px;
+        }
+
+        .saved-delete:hover {
+            color: #ff6b6b;
+        }
+
+        .seed-input {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .seed-input input {
+            width: 80px;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .seed-btn {
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .seed-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .preset-select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .preset-select option {
+            background: #1a1a2e;
+        }
+
+        .preset-desc {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 4px;
+        }
+
         /* Canvas kontejner */
         .canvas-container {
             width: 100%;
@@ -795,6 +956,13 @@
             <h2>⚙️ Nastavení</h2>
             <div class="settings-grid">
                 <div class="setting-item">
+                    <label>Typ tratě</label>
+                    <select class="preset-select" v-model="trackPreset">
+                        <option v-for="(p, key) in PRESETS" :key="key" :value="key">{{ p.label }}</option>
+                    </select>
+                    <div class="preset-desc">{{ PRESETS[trackPreset]?.desc }}</div>
+                </div>
+                <div class="setting-item">
                     <label>Délka tratě (čas)</label>
                     <select v-model="selectedDuration" @change="onDurationChange">
                         <option value="15">15 minut</option>
@@ -819,6 +987,13 @@
                     </div>
                 </div>
                 <div class="setting-item">
+                    <label>Seed (opakovatelnost)</label>
+                    <div class="seed-input">
+                        <input type="number" v-model.number="trackSeed" min="0" max="99999">
+                        <button class="seed-btn" @click="newSeed">🎲</button>
+                    </div>
+                </div>
+                <div class="setting-item">
                     <label>
                         <input type="checkbox" v-model="useRpmLoad"> Proměnlivá zátěž (RPM)
                     </label>
@@ -840,9 +1015,40 @@
                     </div>
                 </div>
             </div>
-            <div class="action-buttons" style="display: flex; gap: 10px;">
-                <button class="btn btn-primary" @click="generateTrack">🔄 Nová trať</button>
+
+            <!-- Statistiky tratě -->
+            <div class="track-stats" v-if="trackStats">
+                <div class="track-stat"><strong>{{ trackStats.maxSlope }}%</strong> max</div>
+                <div class="track-stat"><strong>{{ trackStats.minSlope }}%</strong> min</div>
+                <div class="track-stat"><strong>{{ trackStats.avgSlope }}%</strong> prům.</div>
+                <div class="track-stat"><strong>{{ trackStats.segmentCount }}</strong> seg.</div>
+                <div class="track-stat">
+                    Obtížnost:
+                    <span class="difficulty-bar">
+                        <span v-for="i in 10" :key="i" class="difficulty-pip"
+                              :class="{ active: i <= trackStats.difficulty, medium: i > 3 && i <= 6, hard: i > 6 }"></span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="action-buttons" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" @click="newSeed(); generateTrack()">🔄 Nová trať</button>
+                <button class="btn btn-secondary" @click="generateTrack">🔁 Regenerovat</button>
+                <button class="btn btn-secondary" @click="saveCurrentTrack">💾 Uložit</button>
                 <button class="btn btn-secondary" @click="resetValues">↩ Reset</button>
+            </div>
+
+            <!-- Uložené tratě -->
+            <div class="saved-tracks" v-if="savedTracks.length > 0">
+                <h3>Uložené tratě</h3>
+                <div class="saved-list">
+                    <div class="saved-item" v-for="(track, index) in savedTracks" :key="index">
+                        <div class="saved-name" @click="loadSavedTrack(track)">{{ track.name }}</div>
+                        <span class="saved-meta">{{ track.duration }}min</span>
+                        <span class="saved-meta">{{ PRESETS[track.preset]?.label || track.preset }}</span>
+                        <button class="saved-delete" @click.stop="deleteSavedTrack(index)">✕</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1072,6 +1278,55 @@
             const trackPoints = ref([]);
             const trackSegments = ref([]); // Segmenty tratě pro zobrazení změn
             const cursorIndex = ref(0);
+            const trackSeed = ref(Math.floor(Math.random() * 100000));
+            const trackPreset = ref('random');
+            const savedTracks = ref([]);
+            const trackStats = computed(() => {
+                if (trackSegments.value.length === 0) return null;
+                const segs = trackSegments.value;
+                let totalUp = 0, totalDown = 0, flatCount = 0;
+                let maxSlope = -Infinity, minSlope = Infinity;
+                for (const s of segs) {
+                    const p = s.percent || 0;
+                    if (p > 1) totalUp += p;
+                    else if (p < -1) totalDown += Math.abs(p);
+                    else flatCount++;
+                    if (p > maxSlope) maxSlope = p;
+                    if (p < minSlope) minSlope = p;
+                }
+                const avgSlope = segs.reduce((a, s) => a + (s.percent || 0), 0) / segs.length;
+                const difficulty = Math.min(10, Math.round(
+                    (totalUp / segs.length) * 2 +
+                    (maxSlope / maxIncline.value) * 3 +
+                    (1 - flatCount / segs.length) * 5
+                ));
+                return {
+                    totalUp: Math.round(totalUp),
+                    totalDown: Math.round(totalDown),
+                    maxSlope: Math.round(maxSlope),
+                    minSlope: Math.round(minSlope),
+                    avgSlope: avgSlope.toFixed(1),
+                    difficulty,
+                    segmentCount: segs.length
+                };
+            });
+
+            // Preset definice
+            const PRESETS = {
+                random: { label: 'Náhodná', desc: 'Náhodně generovaná trať' },
+                hilly: { label: 'Kopcovitá', desc: 'Časté stoupání a klesání',
+                    flatChance: 0.15, gentleChance: 0.30, moderateChance: 0.30, steepChance: 0.20, extremeChance: 0.05,
+                    upBias: 0.5 },
+                intervals: { label: 'Intervalová', desc: 'Střídání vysoké a nízké intenzity',
+                    isInterval: true, highPercent: 0.8, lowPercent: 0.1, cycleDuration: 120 },
+                climb: { label: 'Stoupání', desc: 'Postupně narůstající sklon',
+                    isProgressive: true, startFraction: 0.1, endFraction: 0.95, direction: 'up' },
+                flat: { label: 'Plochá s kopci', desc: 'Převážně rovina s občasným kopcem',
+                    flatChance: 0.60, gentleChance: 0.25, moderateChance: 0.10, steepChance: 0.05, extremeChance: 0,
+                    upBias: 0.5 },
+                progressive: { label: 'Progresivní', desc: 'Postupně těžší po celou dobu',
+                    isProgressive: true, startFraction: 0.05, endFraction: 0.85, direction: 'mixed' }
+            };
 
             // Změna délky tratě
             function onDurationChange() {
@@ -1293,122 +1548,186 @@
                 }
             }
 
+            // Seeded random number generator (mulberry32)
+            function createRng(seed) {
+                let s = seed | 0;
+                return function() {
+                    s = (s + 0x6D2B79F5) | 0;
+                    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+                    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+                    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+                };
+            }
+
+            function newSeed() {
+                trackSeed.value = Math.floor(Math.random() * 100000);
+            }
+
             // Generování tratě
             function generateTrack() {
-                const length = trackLength.value; // celková délka v sekundách
-                const variability = roughness.value; // 1-10
+                const rng = createRng(trackSeed.value);
+                const length = trackLength.value;
+                const variability = roughness.value;
+                const preset = PRESETS[trackPreset.value] || PRESETS.random;
 
-                // Parametry sklonu - pracujeme přímo s procenty stoupání
-                const minSlopePercent = minIncline.value; // např. -5%
-                const maxSlopePercent = maxIncline.value; // např. 15%
+                const minSlopePercent = minIncline.value;
+                const maxSlopePercent = maxIncline.value;
 
-                // Střed rozsahu (typicky mírné stoupání kolem 3-5%)
-                const midSlope = (minSlopePercent + maxSlopePercent) / 2;
-                // Šířka "komfortní zóny" - 40% celkového rozsahu kolem středu
-                const comfortRange = (maxSlopePercent - minSlopePercent) * 0.4;
+                // Warm-up a cool-down fáze (2 minuty každá, min 5% délky)
+                const warmupDuration = Math.max(120, Math.floor(length * 0.05));
+                const cooldownDuration = Math.max(120, Math.floor(length * 0.05));
+                const mainStart = warmupDuration;
+                const mainEnd = length - cooldownDuration;
 
-                // 1. Generování cílových sklonů pro segmenty
-                const avgSegmentDuration = 300 - (variability * 25);
+                const slopeTargets = [];
+                // Warm-up: start na 0%, postupně na mírný sklon
+                slopeTargets.push({ time: 0, slope: 0, type: 'warmup', percent: 0 });
+                const warmupEndSlope = Math.round(maxSlopePercent * 0.15);
+                slopeTargets.push({ time: warmupDuration, slope: warmupEndSlope / 4, type: 'warmup', percent: warmupEndSlope });
 
-                let currentStep = 0;
-                const slopeTargets = []; // { time, slope, type }
-                slopeTargets.push({ time: 0, slope: 0, type: 'start' });
-
-                let hasExtreme = false; // jeden extrémní bod (max nebo min)
-                let segmentCount = 0;
-
-                while (currentStep < length) {
-                    currentStep += avgSegmentDuration * (0.7 + Math.random() * 0.6);
-                    if (currentStep > length) currentStep = length;
-                    segmentCount++;
-
-                    let nextSlope;
-                    let segmentType;
-                    const roll = Math.random();
-
-                    // Distribuce terénu:
-                    // 40% - rovina nebo mírný terén (kolem 0%)
-                    // 35% - mírné stoupání/klesání (30-60% rozsahu)
-                    // 15% - střední stoupání/klesání (60-80% rozsahu)
-                    // 8% - prudké stoupání/klesání (80-95% rozsahu)
-                    // 2% - extrémní (95-100% rozsahu) - max 1× za trať
-
-                    if (roll < 0.40) {
-                        // Rovina nebo velmi mírný terén
-                        nextSlope = (Math.random() - 0.5) * 3; // -1.5% až +1.5%
-                        segmentType = 'flat';
-                    } else if (roll < 0.75) {
-                        // Mírné stoupání nebo klesání
-                        const intensity = 0.3 + Math.random() * 0.3; // 30-60% rozsahu
-                        if (Math.random() < 0.6) {
-                            // Častěji stoupání
-                            nextSlope = maxSlopePercent * intensity;
+                // Hlavní část tratě podle presetu
+                if (preset.isInterval) {
+                    // Intervalová trať
+                    const cycle = preset.cycleDuration || 120;
+                    let t = mainStart;
+                    let isHigh = false;
+                    while (t < mainEnd) {
+                        isHigh = !isHigh;
+                        const duration = cycle * (0.8 + rng() * 0.4);
+                        t += duration;
+                        if (t > mainEnd) t = mainEnd;
+                        let slope;
+                        if (isHigh) {
+                            slope = maxSlopePercent * (preset.highPercent + (rng() - 0.5) * 0.2);
                         } else {
-                            // Méně často klesání
-                            nextSlope = minSlopePercent * intensity;
+                            slope = maxSlopePercent * (preset.lowPercent + (rng() - 0.5) * 0.1);
                         }
-                        segmentType = 'gentle';
-                    } else if (roll < 0.90) {
-                        // Střední terén
-                        const intensity = 0.6 + Math.random() * 0.2; // 60-80% rozsahu
-                        if (Math.random() < 0.5) {
-                            nextSlope = maxSlopePercent * intensity;
-                        } else {
-                            nextSlope = minSlopePercent * intensity;
-                        }
-                        segmentType = 'moderate';
-                    } else if (roll < 0.98 || hasExtreme) {
-                        // Prudký terén (ale ne maximum)
-                        const intensity = 0.8 + Math.random() * 0.15; // 80-95% rozsahu
-                        if (Math.random() < 0.5) {
-                            nextSlope = maxSlopePercent * intensity;
-                        } else {
-                            nextSlope = minSlopePercent * intensity;
-                        }
-                        segmentType = 'steep';
-                    } else {
-                        // Extrémní bod - jen 1× za celou trať
-                        const intensity = 0.95 + Math.random() * 0.05; // 95-100%
-                        if (Math.random() < 0.5) {
-                            nextSlope = maxSlopePercent * intensity;
-                            segmentType = 'peak';
-                        } else {
-                            nextSlope = minSlopePercent * intensity;
-                            segmentType = 'valley';
-                        }
-                        hasExtreme = true;
+                        slope = Math.max(minSlopePercent, Math.min(maxSlopePercent, slope));
+                        slopeTargets.push({
+                            time: Math.floor(t),
+                            slope: slope / 4,
+                            type: isHigh ? 'steep' : 'flat',
+                            percent: Math.round(slope)
+                        });
                     }
-
-                    // Variabilita ovlivňuje šíři rozptylu
-                    if (variability < 5) {
-                        // Nízká variabilita - zmenšíme extrémy
-                        nextSlope *= (0.5 + variability * 0.1);
+                } else if (preset.isProgressive) {
+                    // Progresivní/stoupající trať
+                    const segCount = Math.max(6, Math.floor((mainEnd - mainStart) / 180));
+                    for (let i = 0; i < segCount; i++) {
+                        const progress = i / (segCount - 1);
+                        const t = mainStart + progress * (mainEnd - mainStart);
+                        const fraction = preset.startFraction + progress * (preset.endFraction - preset.startFraction);
+                        let slope;
+                        if (preset.direction === 'up') {
+                            slope = maxSlopePercent * fraction;
+                        } else {
+                            // Mixed - stoupá ale s vlnami
+                            const wave = Math.sin(progress * Math.PI * 3) * 0.2;
+                            slope = maxSlopePercent * Math.max(0, fraction + wave);
+                        }
+                        // Malá náhodnost
+                        slope += (rng() - 0.5) * variability * 0.5;
+                        slope = Math.max(minSlopePercent, Math.min(maxSlopePercent, slope));
+                        slopeTargets.push({
+                            time: Math.floor(t),
+                            slope: slope / 4,
+                            type: slope > maxSlopePercent * 0.6 ? 'steep' : slope > maxSlopePercent * 0.3 ? 'moderate' : 'gentle',
+                            percent: Math.round(slope)
+                        });
                     }
+                } else {
+                    // Distribuce podle presetu (random, hilly, flat...)
+                    const flatC = preset.flatChance || 0.40;
+                    const gentleC = flatC + (preset.gentleChance || 0.35);
+                    const moderateC = gentleC + (preset.moderateChance || 0.15);
+                    const steepC = moderateC + (preset.steepChance || 0.08);
+                    const upBias = preset.upBias || 0.6;
 
-                    // Clamp na povolený rozsah
-                    nextSlope = Math.max(minSlopePercent, Math.min(maxSlopePercent, nextSlope));
+                    const avgSegmentDuration = 300 - (variability * 25);
+                    let currentStep = mainStart;
+                    let hasExtreme = false;
 
-                    slopeTargets.push({
-                        time: Math.floor(currentStep),
-                        slope: nextSlope / 4, // Převod na interní jednotky pro altitude
-                        type: segmentType,
-                        percent: Math.round(nextSlope) // Pro debug
-                    });
+                    while (currentStep < mainEnd) {
+                        currentStep += avgSegmentDuration * (0.7 + rng() * 0.6);
+                        if (currentStep > mainEnd) currentStep = mainEnd;
+
+                        let nextSlope;
+                        let segmentType;
+                        const roll = rng();
+
+                        if (roll < flatC) {
+                            nextSlope = (rng() - 0.5) * 3;
+                            segmentType = 'flat';
+                        } else if (roll < gentleC) {
+                            const intensity = 0.3 + rng() * 0.3;
+                            nextSlope = rng() < upBias ? maxSlopePercent * intensity : minSlopePercent * intensity;
+                            segmentType = 'gentle';
+                        } else if (roll < moderateC) {
+                            const intensity = 0.6 + rng() * 0.2;
+                            nextSlope = rng() < 0.5 ? maxSlopePercent * intensity : minSlopePercent * intensity;
+                            segmentType = 'moderate';
+                        } else if (roll < steepC || hasExtreme) {
+                            const intensity = 0.8 + rng() * 0.15;
+                            nextSlope = rng() < 0.5 ? maxSlopePercent * intensity : minSlopePercent * intensity;
+                            segmentType = 'steep';
+                        } else {
+                            const intensity = 0.95 + rng() * 0.05;
+                            if (rng() < 0.5) {
+                                nextSlope = maxSlopePercent * intensity;
+                                segmentType = 'peak';
+                            } else {
+                                nextSlope = minSlopePercent * intensity;
+                                segmentType = 'valley';
+                            }
+                            hasExtreme = true;
+                        }
+
+                        if (variability < 5) {
+                            nextSlope *= (0.5 + variability * 0.1);
+                        }
+
+                        nextSlope = Math.max(minSlopePercent, Math.min(maxSlopePercent, nextSlope));
+
+                        slopeTargets.push({
+                            time: Math.floor(currentStep),
+                            slope: nextSlope / 4,
+                            type: segmentType,
+                            percent: Math.round(nextSlope)
+                        });
+                    }
                 }
 
-                // Debug výpis segmentů
-                console.log('=== VYGENEROVANÁ TRAŤ ===');
-                console.log(`Délka: ${length}s, Segmentů: ${slopeTargets.length}`);
-                console.log(`Rozsah sklonu: ${minSlopePercent}% až ${maxSlopePercent}%`);
+                // Cool-down: postupný sjezd na 0%
+                const cooldownStartSlope = slopeTargets.length > 0 ? (slopeTargets[slopeTargets.length - 1].percent || 0) : 0;
+                const cooldownMidSlope = Math.round(cooldownStartSlope * 0.3);
+                slopeTargets.push({ time: mainEnd + Math.floor(cooldownDuration * 0.5), slope: cooldownMidSlope / 4, type: 'cooldown', percent: cooldownMidSlope });
+                slopeTargets.push({ time: length, slope: 0, type: 'cooldown', percent: 0 });
+
+                // Seřadit segmenty podle času
+                slopeTargets.sort((a, b) => a.time - b.time);
+
+                // Vyvážení tratě - kontrola a korekce
+                let upSegments = 0, downSegments = 0, flatSegments = 0;
+                for (const s of slopeTargets) {
+                    const p = s.percent || 0;
+                    if (p > 1) upSegments++;
+                    else if (p < -1) downSegments++;
+                    else flatSegments++;
+                }
+                const total = slopeTargets.length;
+                console.log(`Vyvážení: ${upSegments} nahoru, ${downSegments} dolů, ${flatSegments} rovina (z ${total})`);
+
+                // Debug
+                console.log(`=== TRAŤ [${trackPreset.value}] seed=${trackSeed.value} ===`);
+                console.log(`Délka: ${length}s, Warm-up: ${warmupDuration}s, Cool-down: ${cooldownDuration}s`);
                 slopeTargets.forEach((s, i) => {
                     console.log(`  [${i}] t=${s.time}s, sklon=${s.percent || 0}%, typ=${s.type}`);
                 });
 
-                // 2. Interpolace sklonu a Integrace na Výšku
+                // Interpolace a integrace
                 const points = [];
                 let currentAltitude = 0;
                 let targetIndex = 0;
-                let currentSlopeVal = 0;
 
                 for (let t = 0; t < length; t++) {
                     while (targetIndex < slopeTargets.length - 1 && t >= slopeTargets[targetIndex].time) {
@@ -1422,21 +1741,63 @@
                     const segmentProgress = segmentDuration === 0 ? 0 : (t - prevTarget.time) / segmentDuration;
                     const p = Math.max(0, Math.min(1, segmentProgress));
 
-                    // Cosine interpolation pro hladké přechody
                     const mu2 = (1 - Math.cos(p * Math.PI)) / 2;
-                    currentSlopeVal = prevTarget.slope * (1 - mu2) + nextTarget.slope * mu2;
+                    const currentSlopeVal = prevTarget.slope * (1 - mu2) + nextTarget.slope * mu2;
 
                     currentAltitude += currentSlopeVal;
                     points.push(currentAltitude);
                 }
 
                 trackPoints.value = points;
-                trackSegments.value = slopeTargets; // Uložit segmenty pro debug zobrazení
+                trackSegments.value = slopeTargets;
                 cursorIndex.value = 0;
                 isFinished.value = false;
 
                 zeroRpmCount = 0;
                 releaseWakeLock();
+            }
+
+            // Uložení/načtení tratí
+            function loadSavedTracks() {
+                const stored = localStorage.getItem('savedTracks');
+                if (stored) savedTracks.value = JSON.parse(stored);
+            }
+
+            function saveCurrentTrack() {
+                const name = prompt('Název tratě:');
+                if (!name) return;
+                savedTracks.value.unshift({
+                    name,
+                    seed: trackSeed.value,
+                    preset: trackPreset.value,
+                    duration: trackDuration.value,
+                    roughness: roughness.value,
+                    minIncline: minIncline.value,
+                    maxIncline: maxIncline.value,
+                    minLoad: minLoad.value,
+                    maxLoad: maxLoad.value,
+                    savedAt: Date.now()
+                });
+                if (savedTracks.value.length > 30) savedTracks.value.pop();
+                localStorage.setItem('savedTracks', JSON.stringify(savedTracks.value));
+            }
+
+            function loadSavedTrack(track) {
+                trackSeed.value = track.seed;
+                trackPreset.value = track.preset;
+                trackDuration.value = track.duration;
+                selectedDuration.value = [15,30,45,60,90,120].includes(track.duration) ? String(track.duration) : 'custom';
+                roughness.value = track.roughness;
+                minIncline.value = track.minIncline;
+                maxIncline.value = track.maxIncline;
+                minLoad.value = track.minLoad;
+                maxLoad.value = track.maxLoad;
+                generateTrack();
+            }
+
+            function deleteSavedTrack(index) {
+                savedTracks.value.splice(index, 1);
+                localStorage.setItem('savedTracks', JSON.stringify(savedTracks.value));
             }
 
             // Vykreslení tratě
@@ -1786,7 +2147,7 @@
             }
 
             // Watch pro změny nastavení
-            watch([trackDuration, roughness], () => {
+            watch([trackDuration, roughness, trackPreset], () => {
                 generateTrack();
             });
 
@@ -1796,8 +2157,9 @@
 
             // Lifecycle
             onMounted(() => {
-                // Načtení video historie
+                // Načtení video historie a uložených tratí
                 loadVideoHistory();
+                loadSavedTracks();
 
                 // Načtení YouTube IFrame API
                 const tag = document.createElement('script');
@@ -1892,7 +2254,18 @@
                 resetValues,
                 formatTime,
                 isFinished,
-                toggleFullscreen
+                toggleFullscreen,
+
+                // Nové
+                trackPreset,
+                PRESETS,
+                trackSeed,
+                newSeed,
+                trackStats,
+                savedTracks,
+                saveCurrentTrack,
+                loadSavedTrack,
+                deleteSavedTrack
             };
         }
     }).mount('#app');
