@@ -230,27 +230,27 @@
         /* Stats grid */
         .stats-grid {
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
         .stat-item {
             text-align: center;
-            padding: 12px 16px;
+            padding: 10px 14px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
-            min-width: 90px;
+            min-width: 80px;
         }
 
         .stat-label {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 4px;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             transition: all 0.3s ease;
         }
@@ -270,10 +270,14 @@
             text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
         }
 
+        .stat-value.distance {
+            color: #69f0ae;
+            text-shadow: 0 0 10px rgba(105, 240, 174, 0.5);
+        }
+
         .stat-value.time {
             color: #e040fb;
             text-shadow: 0 0 10px rgba(224, 64, 251, 0.5);
-            font-size: 2rem;
         }
 
         .stat-value.time.finished {
@@ -283,19 +287,18 @@
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.6;
-            }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
 
         .stat-value.animate {
             transform: scale(1.1);
+        }
+
+        .stat-sub {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 2px;
         }
 
         /* Load controls */
@@ -566,6 +569,149 @@
             font-size: 0.75rem;
             color: rgba(255, 255, 255, 0.5);
             margin-top: 4px;
+        }
+
+        /* Workout history */
+        .workout-history {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .workout-history h3 {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .workout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .workout-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            font-size: 0.75rem;
+        }
+
+        .workout-date {
+            color: rgba(255, 255, 255, 0.5);
+            min-width: 70px;
+        }
+
+        .workout-info {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .workout-tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .workout-tag.rpm { color: #00e5ff; }
+        .workout-tag.time { color: #e040fb; }
+        .workout-tag.preset { color: #ffc107; }
+
+        .workout-delete {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 2px;
+        }
+
+        .workout-delete:hover {
+            color: #ff6b6b;
+        }
+
+        /* Debug toggle */
+        .debug-toggle {
+            position: fixed;
+            bottom: 30vh;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .debug-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .debug-toggle.active {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+        }
+
+        .debug-panel {
+            position: fixed;
+            bottom: 30vh;
+            left: 70px;
+            max-width: 320px;
+            z-index: 99;
+        }
+
+        .debug-panel .card {
+            padding: 12px;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        .debug-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .debug-row:last-child {
+            border-bottom: none;
+        }
+
+        .debug-label {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .debug-value {
+            font-weight: 600;
+        }
+
+        .debug-section {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        .debug-section:first-child {
+            margin-top: 0;
         }
 
         /* Canvas kontejner */
@@ -849,14 +995,18 @@
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-label">Čas</div>
-                        <div class="stat-value time" :class="{ finished: isFinished }">{{ formatTime(cursorIndex) }}
-                        </div>
-                        <div class="stat-label">/ {{ formatTime(trackPoints.length) }}</div>
+                        <div class="stat-value time" :class="{ finished: isFinished }">{{ formatTime(cursorIndex) }}</div>
+                        <div class="stat-sub">/ {{ formatTime(trackPoints.length) }}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Vzdálenost</div>
+                        <div class="stat-value distance">{{ distanceKm }}</div>
+                        <div class="stat-sub">km</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Kadence</div>
                         <div class="stat-value rpm">{{ rpm }}</div>
-                        <div class="stat-label">RPM</div>
+                        <div class="stat-sub">RPM</div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Stoupání</div>
@@ -891,7 +1041,11 @@
         <div class="bottom-panel" v-if="showTrack">
             <div class="card track-card">
                 <div class="canvas-container">
-                    <canvas ref="trackCanvas" @click="seekToPosition($event)" style="cursor: pointer;"></canvas>
+                    <canvas ref="trackCanvas" @click="seekToPosition($event)"
+                            @touchstart="onTouchStart($event)"
+                            @touchmove="onTouchMove($event)"
+                            @touchend="onTouchEnd($event)"
+                            style="cursor: pointer; touch-action: none;"></canvas>
                     <div class="track-controls">
                         <button class="track-btn" @click="scrollTrack(-1)">◀</button>
                         <button class="track-btn" @click="zoomOut">−</button>
@@ -903,10 +1057,64 @@
             </div>
         </div>
 
-        <!-- Toggle graf -->
-        <button class="track-toggle" @click="showTrack = !showTrack">
-            {{ showTrack ? '▼' : '▲' }}
-        </button>
+    </div>
+
+    <!-- Toggle graf -->
+    <button class="track-toggle" @click="showTrack = !showTrack">
+        {{ showTrack ? '▼' : '▲' }}
+    </button>
+
+    <!-- Debug toggle -->
+    <button class="debug-toggle" :class="{ active: showDebug }"
+            @click.stop="showDebug = !showDebug">🔍</button>
+
+    <!-- Debug panel -->
+    <div class="debug-panel" v-if="showDebug" @click.stop>
+        <div class="card">
+            <div class="debug-section">Pozice</div>
+            <div class="debug-row">
+                <span class="debug-label">Čas</span>
+                <span class="debug-value" style="color: #e040fb;">{{ formatTime(cursorIndex) }} / {{ formatTime(trackPoints.length) }}</span>
+            </div>
+            <div class="debug-row">
+                <span class="debug-label">Zbývá</span>
+                <span class="debug-value" style="color: rgba(255,255,255,0.7);">{{ formatTime(trackPoints.length - cursorIndex) }}</span>
+            </div>
+
+            <div class="debug-section">Aktuální</div>
+            <div class="debug-row">
+                <span class="debug-label">Sklon</span>
+                <span class="debug-value" :style="{ color: debugInfo.slopeColor }">{{ debugInfo.slope }}% ({{ debugInfo.slopeLabel }})</span>
+            </div>
+            <div class="debug-row">
+                <span class="debug-label">Zátěž</span>
+                <span class="debug-value" style="color: #ff5722;">{{ debugInfo.currentLoad }}</span>
+            </div>
+
+            <div class="debug-section">Další segment</div>
+            <div class="debug-row" v-if="debugInfo.nextSegment">
+                <span class="debug-label">Za</span>
+                <span class="debug-value" style="color: #ffc107;">{{ formatTime(debugInfo.timeToNext) }}</span>
+            </div>
+            <div class="debug-row" v-if="debugInfo.nextSegment">
+                <span class="debug-label">Cíl</span>
+                <span class="debug-value" :style="{ color: debugInfo.nextColor }">{{ debugInfo.nextSegment.percent }}% ({{ debugInfo.nextLabel }}) → {{ debugInfo.nextLoad }}</span>
+            </div>
+            <div class="debug-row" v-if="!debugInfo.nextSegment">
+                <span class="debug-label">Stav</span>
+                <span class="debug-value" style="color: rgba(255,255,255,0.5);">Poslední segment</span>
+            </div>
+
+            <div class="debug-section">Trať</div>
+            <div class="debug-row">
+                <span class="debug-label">Preset</span>
+                <span class="debug-value" style="color: #00d4ff;">{{ PRESETS[trackPreset]?.label }}</span>
+            </div>
+            <div class="debug-row">
+                <span class="debug-label">Seed</span>
+                <span class="debug-value" style="color: rgba(255,255,255,0.7);">{{ trackSeed }}</span>
+            </div>
+        </div>
     </div>
 
     <!-- Nastavení tlačítko -->
@@ -979,6 +1187,22 @@
                     <input type="number" v-model.number="trackDuration" min="1" max="240" class="custom-input">
                 </div>
                 <div class="setting-item">
+                    <label>Min. sklon: {{ minIncline }}%</label>
+                    <div class="value-adjuster">
+                        <button class="btn btn-sm" @click="minIncline = Math.max(-20, minIncline - 1)">➖</button>
+                        <input type="range" v-model.number="minIncline" min="-20" max="0" step="1">
+                        <button class="btn btn-sm" @click="minIncline = Math.min(0, minIncline + 1)">➕</button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Max. sklon: {{ maxIncline }}%</label>
+                    <div class="value-adjuster">
+                        <button class="btn btn-sm" @click="maxIncline = Math.max(1, maxIncline - 1)">➖</button>
+                        <input type="range" v-model.number="maxIncline" min="1" max="25" step="1">
+                        <button class="btn btn-sm" @click="maxIncline = Math.min(25, maxIncline + 1)">➕</button>
+                    </div>
+                </div>
+                <div class="setting-item">
                     <label>Variabilita: {{ roughness }}</label>
                     <div class="value-adjuster">
                         <button class="btn btn-sm" @click="roughness = Math.max(1, roughness - 1)">➖</button>
@@ -1047,6 +1271,24 @@
                         <span class="saved-meta">{{ track.duration }}min</span>
                         <span class="saved-meta">{{ PRESETS[track.preset]?.label || track.preset }}</span>
                         <button class="saved-delete" @click.stop="deleteSavedTrack(index)">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historie tréninků -->
+            <div class="workout-history" v-if="workoutHistory.length > 0">
+                <h3>Historie tréninků</h3>
+                <div class="workout-list">
+                    <div class="workout-item" v-for="(w, index) in workoutHistory" :key="index">
+                        <span class="workout-date">{{ formatWorkoutDate(w.date) }}</span>
+                        <div class="workout-info">
+                            <span class="workout-tag time">{{ formatTime(w.duration) }}</span>
+                            <span class="workout-tag rpm">{{ w.avgRpm }} rpm</span>
+                            <span v-if="w.distance" class="workout-tag" style="color: #69f0ae;">{{ w.distance }} km</span>
+                            <span class="workout-tag preset">{{ PRESETS[w.preset]?.label || w.preset }}</span>
+                            <span v-if="w.completed" style="color: #4caf50;">✓</span>
+                        </div>
+                        <button class="workout-delete" @click.stop="deleteWorkout(index)">✕</button>
                     </div>
                 </div>
             </div>
@@ -1165,7 +1407,11 @@
             const load = ref(1);
             const loadOffset = ref(0);
             const currentBaseLoad = ref(0);
+            const totalDistanceMeters = ref(0);
             const rpmAnimating = ref(false);
+
+            // Vzdálenost v km (zaokrouhleno na 2 des. místa)
+            const distanceKm = computed(() => (totalDistanceMeters.value / 1000).toFixed(2));
             const inclineAnimating = ref(false);
             const loadAnimating = ref(false);
 
@@ -1225,6 +1471,7 @@
             const maxIncline = ref(15);
             const showSettings = ref(false);
             const showVideoModal = ref(false);
+            const showDebug = ref(false);
             const showTrack = ref(true);
             const useRpmLoad = ref(false);
             const minLoad = ref(5);
@@ -1276,6 +1523,7 @@
             const trackLength = computed(() => trackDuration.value * 60); // 1 bod = 1 sekunda
             const roughness = ref(5);
             const trackPoints = ref([]);
+            const trackSlopes = ref([]); // Skutečný sklon v % pro každý bod
             const trackSegments = ref([]); // Segmenty tratě pro zobrazení změn
             const cursorIndex = ref(0);
             const trackSeed = ref(Math.floor(Math.random() * 100000));
@@ -1309,6 +1557,44 @@
                     difficulty,
                     segmentCount: segs.length
                 };
+            });
+
+            // Debug info computed
+            const debugInfo = computed(() => {
+                const slope = trackSlopes.value[cursorIndex.value] || 0;
+                const slopeLabel = slope < -1 ? 'Sjezd' : slope <= 1 ? 'Rovina' : slope <= 10 ? 'Stoupání' : 'Prudké';
+
+                const inclineRange = maxIncline.value - minIncline.value;
+                const loadRange = maxLoad.value - minLoad.value;
+                const normalizedSlope = inclineRange > 0 ? (slope - minIncline.value) / inclineRange : 0.5;
+                const currentLoad = Math.round(minLoad.value + normalizedSlope * loadRange);
+
+                // Barva podle sklonu (zjednodušená pro CSS)
+                const slopeColor = slope < -1 ? '#4fc3f7' : slope <= 1 ? '#32cd32' : slope <= 10 ? '#ff9800' : '#f44336';
+
+                // Najít následující segment
+                let nextSegment = null;
+                let timeToNext = 0;
+                for (const seg of trackSegments.value) {
+                    if (seg.time > cursorIndex.value) {
+                        nextSegment = seg;
+                        timeToNext = seg.time - cursorIndex.value;
+                        break;
+                    }
+                }
+
+                let nextLabel = '';
+                let nextLoad = 0;
+                let nextColor = '#fff';
+                if (nextSegment) {
+                    const np = nextSegment.percent || 0;
+                    nextLabel = np < -1 ? 'Sjezd' : np <= 1 ? 'Rovina' : np <= 10 ? 'Stoupání' : 'Prudké';
+                    const normalizedNext = inclineRange > 0 ? (np - minIncline.value) / inclineRange : 0.5;
+                    nextLoad = Math.round(minLoad.value + normalizedNext * loadRange);
+                    nextColor = np < -1 ? '#4fc3f7' : np <= 1 ? '#32cd32' : np <= 10 ? '#ff9800' : '#f44336';
+                }
+
+                return { slope, slopeLabel, slopeColor, currentLoad, nextSegment, timeToNext, nextLabel, nextLoad, nextColor };
             });
 
             // Preset definice
@@ -1389,6 +1675,62 @@
                 // Nastavení nové pozice
                 cursorIndex.value = Math.max(0, Math.min(trackPoints.value.length - 1, clickedIndex));
                 drawTrack();
+            }
+
+            // Touch gesta pro canvas
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchStartDist = 0;
+            let touchStartZoom = 1;
+            let isTouchPanning = false;
+
+            function getTouchDist(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            function onTouchStart(e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    touchStartDist = getTouchDist(e.touches);
+                    touchStartZoom = trackZoom.value;
+                    isTouchPanning = false;
+                } else if (e.touches.length === 1) {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                    isTouchPanning = true;
+                }
+            }
+
+            function onTouchMove(e) {
+                if (e.touches.length === 2 && touchStartDist > 0) {
+                    e.preventDefault();
+                    const currentDist = getTouchDist(e.touches);
+                    const scale = currentDist / touchStartDist;
+                    trackZoom.value = Math.max(1, Math.min(10, touchStartZoom * scale));
+                    adjustOffset();
+                    drawTrack();
+                } else if (e.touches.length === 1 && isTouchPanning && trackZoom.value > 1) {
+                    e.preventDefault();
+                    const dx = e.touches[0].clientX - touchStartX;
+                    touchStartX = e.touches[0].clientX;
+                    const pointsPerPixel = trackPoints.value.length / trackZoom.value / (trackCanvas.value?.getBoundingClientRect().width || 300);
+                    trackOffset.value = Math.max(0, Math.min(
+                        trackPoints.value.length - trackPoints.value.length / trackZoom.value,
+                        trackOffset.value - dx * pointsPerPixel
+                    ));
+                    drawTrack();
+                }
+            }
+
+            function onTouchEnd(e) {
+                if (e.touches.length < 2) {
+                    touchStartDist = 0;
+                }
+                if (e.touches.length === 0) {
+                    isTouchPanning = false;
+                }
             }
 
             // Intervaly
@@ -1724,8 +2066,9 @@
                     console.log(`  [${i}] t=${s.time}s, sklon=${s.percent || 0}%, typ=${s.type}`);
                 });
 
-                // Interpolace a integrace
+                // Interpolace a integrace - ukládáme i skutečný sklon v %
                 const points = [];
+                const slopes = [];
                 let currentAltitude = 0;
                 let targetIndex = 0;
 
@@ -1746,14 +2089,18 @@
 
                     currentAltitude += currentSlopeVal;
                     points.push(currentAltitude);
+                    slopes.push(Math.round(currentSlopeVal * 4)); // zpět na % (slope = percent/4)
                 }
 
                 trackPoints.value = points;
+                trackSlopes.value = slopes;
                 trackSegments.value = slopeTargets;
                 cursorIndex.value = 0;
                 isFinished.value = false;
 
                 zeroRpmCount = 0;
+                rpmSamples = [];
+                totalDistanceMeters.value = 0;
                 releaseWakeLock();
             }
 
@@ -1798,6 +2145,45 @@
             function deleteSavedTrack(index) {
                 savedTracks.value.splice(index, 1);
                 localStorage.setItem('savedTracks', JSON.stringify(savedTracks.value));
+            }
+
+            // Historie tréninků
+            const workoutHistory = ref([]);
+            let rpmSamples = [];
+
+            function loadWorkoutHistory() {
+                const stored = localStorage.getItem('workoutHistory');
+                if (stored) workoutHistory.value = JSON.parse(stored);
+            }
+
+            function saveWorkoutToHistory() {
+                const elapsed = cursorIndex.value;
+                if (elapsed < 60) return; // ignorovat < 1 min
+                const avgRpm = rpmSamples.length > 0 ? Math.round(rpmSamples.reduce((a, b) => a + b, 0) / rpmSamples.length) : 0;
+                const maxRpm = rpmSamples.length > 0 ? Math.max(...rpmSamples) : 0;
+                workoutHistory.value.unshift({
+                    date: Date.now(),
+                    duration: elapsed,
+                    avgRpm,
+                    maxRpm,
+                    distance: distanceKm.value,
+                    preset: trackPreset.value,
+                    seed: trackSeed.value,
+                    trackDuration: trackDuration.value,
+                    completed: isFinished.value
+                });
+                if (workoutHistory.value.length > 50) workoutHistory.value.pop();
+                localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory.value));
+            }
+
+            function deleteWorkout(index) {
+                workoutHistory.value.splice(index, 1);
+                localStorage.setItem('workoutHistory', JSON.stringify(workoutHistory.value));
+            }
+
+            function formatWorkoutDate(timestamp) {
+                const d = new Date(timestamp);
+                return `${d.getDate()}.${d.getMonth() + 1}. ${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`;
             }
 
             // Vykreslení tratě
@@ -1907,17 +2293,15 @@
                     return null; // Žádný další segment
                 };
 
-                // Barevná výplň pod křivkou podle segmentu
+                // Barevná výplň pod křivkou podle SKUTEČNÉHO sklonu
                 for (let i = startIndex; i < endIndex - 1; i++) {
                     const x1 = (i - startIndex) * pointWidth;
                     const x2 = (i + 1 - startIndex) * pointWidth;
                     const y1 = valueToY(trackPoints.value[i]);
                     const y2 = valueToY(trackPoints.value[i + 1]);
 
-                    // Barva podle cílového sklonu segmentu
-                    const segment = getSegmentForTime(i);
-                    const segmentSlope = segment.percent || 0;
-                    const color = getSlopeColor(segmentSlope);
+                    const actualSlope = trackSlopes.value[i] || 0;
+                    const color = getSlopeColor(actualSlope);
 
                     // Výplň sloupce
                     ctx.beginPath();
@@ -1930,7 +2314,7 @@
                     ctx.fill();
                 }
 
-                // Křivka profilu - barevná podle segmentu
+                // Křivka profilu - barevná podle skutečného sklonu
                 ctx.lineWidth = 3;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
@@ -1941,14 +2325,12 @@
                     const y1 = valueToY(trackPoints.value[i]);
                     const y2 = valueToY(trackPoints.value[i + 1]);
 
-                    // Barva podle cílového sklonu segmentu
-                    const segment = getSegmentForTime(i);
-                    const segmentSlope = segment.percent || 0;
+                    const actualSlope = trackSlopes.value[i] || 0;
 
                     ctx.beginPath();
                     ctx.moveTo(x1, y1);
                     ctx.lineTo(x2, y2);
-                    ctx.strokeStyle = getSlopeColor(segmentSlope);
+                    ctx.strokeStyle = getSlopeColor(actualSlope);
                     ctx.stroke();
                 }
 
@@ -1974,88 +2356,66 @@
                     ctx.lineWidth = 2;
                     ctx.stroke();
 
-                    // Vnitřní tečka - barva podle aktuálního sklonu
-                    const lookAhead = 10;
-                    const currentPoint = trackPoints.value[cursorIndex.value];
-                    const futureIdx = Math.min(cursorIndex.value + lookAhead, trackPoints.value.length - 1);
-                    const futurePoint = trackPoints.value[futureIdx];
-                    const debugSlope = Math.round((futurePoint - currentPoint) / lookAhead * 4);
-                    const clampedSlope = Math.max(minIncline.value, Math.min(maxIncline.value, debugSlope));
-
-                    // Čas
-                    const debugTime = formatTime(cursorIndex.value);
-                    const totalTime = formatTime(trackPoints.value.length);
-
-                    // Rozsahy pro výpočet zátěže
-                    const inclineRange = maxIncline.value - minIncline.value;
-                    const loadRange = maxLoad.value - minLoad.value;
-
-                    // Najít AKTUÁLNÍ segment (ve kterém jsme) a NÁSLEDUJÍCÍ segment (kam se změní)
-                    let currentSegment = getSegmentForTime(cursorIndex.value);
-                    let nextSegment = getNextSegmentForTime(cursorIndex.value);
-                    let timeToNext = nextSegment ? nextSegment.time - cursorIndex.value : 0;
-
-                    // Aktuální sklon (to co odpovídá barvě tratě)
-                    const segmentSlope = currentSegment ? (currentSegment.percent || 0) : 0;
-                    const segmentLabel = segmentSlope < -1 ? 'Sjezd' :
-                        segmentSlope <= 1 ? 'Rovina' :
-                            segmentSlope <= 10 ? 'Stoupání' : 'Prudké';
-
-                    // Výpočet odpovídající zátěže ze segmentu
-                    const normalizedSegment = inclineRange > 0 ? (segmentSlope - minIncline.value) / inclineRange : 0.5;
-                    const segmentLoad = Math.round(minLoad.value + normalizedSegment * loadRange);
-
-                    // Barva tečky podle AKTUÁLNÍHO segmentu
+                    // Barva tečky podle skutečného sklonu
+                    const actualSlope = trackSlopes.value[cursorIndex.value] || 0;
                     ctx.beginPath();
                     ctx.arc(cursorX, cursorY, 5, 0, Math.PI * 2);
-                    ctx.fillStyle = getSlopeColor(segmentSlope);
+                    ctx.fillStyle = getSlopeColor(actualSlope);
                     ctx.fill();
+                }
 
-                    // Debug box
-                    const boxHeight = 100;
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-                    ctx.fillRect(10, 10, 320, boxHeight);
-                    ctx.strokeStyle = getSlopeColor(segmentSlope);
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(10, 10, 320, boxHeight);
+                // Warm-up / cool-down značky
+                const warmupEnd = trackSegments.value.find(s => s.type === 'warmup' && s.time > 0);
+                const cooldownStart = [...trackSegments.value].reverse().find(s => s.type === 'cooldown');
+                if (warmupEnd && warmupEnd.time >= startIndex && warmupEnd.time < endIndex) {
+                    const wx = (warmupEnd.time - startIndex) * pointWidth;
+                    ctx.strokeStyle = 'rgba(105, 240, 174, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(wx, 0);
+                    ctx.lineTo(wx, height);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = 'rgba(105, 240, 174, 0.7)';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText('WARM-UP', Math.max(4, wx - 48), 14);
+                }
+                if (cooldownStart && cooldownStart.time >= startIndex && cooldownStart.time < endIndex) {
+                    const cx = (cooldownStart.time - startIndex) * pointWidth;
+                    ctx.strokeStyle = 'rgba(79, 195, 247, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    ctx.beginPath();
+                    ctx.moveTo(cx, 0);
+                    ctx.lineTo(cx, height);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.fillStyle = 'rgba(79, 195, 247, 0.7)';
+                    ctx.font = '10px sans-serif';
+                    ctx.fillText('COOL-DOWN', cx + 4, 14);
+                }
 
-                    // Debug text
-                    ctx.font = '12px monospace';
-
-                    // Čas
-                    ctx.fillStyle = '#fff';
-                    ctx.fillText(`⏱️ Čas: ${debugTime} / ${totalTime}`, 20, 26);
-
-                    // Aktuální segment (odpovídá barvě tratě)
-                    ctx.fillStyle = getSlopeColor(segmentSlope);
-                    ctx.fillText(`📐 Nyní: ${segmentSlope}% (${segmentLabel}) → zátěž ${segmentLoad}`, 20, 44);
-
-                    // Od kdy je tento segment
-                    if (currentSegment) {
-                        const timeInSegment = cursorIndex.value - currentSegment.time;
-                        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-                        ctx.fillText(`   od ${formatTime(currentSegment.time)}, trvá ${formatTime(timeInSegment)}`, 20, 60);
-                    }
-
-                    // Za jak dlouho se změní zátěž
-                    if (nextSegment) {
-                        const nextLabel = nextSegment.percent < -1 ? 'Sjezd' :
-                            nextSegment.percent <= 1 ? 'Rovina' :
-                                nextSegment.percent <= 10 ? 'Stoupání' : 'Prudké';
-                        const normalizedNext = inclineRange > 0 ? (nextSegment.percent - minIncline.value) / inclineRange : 0.5;
-                        const nextLoad = Math.round(minLoad.value + normalizedNext * loadRange);
-
-                        ctx.fillStyle = getSlopeColor(nextSegment.percent);
-                        ctx.fillText(`🔜 Změna za ${formatTime(timeToNext)}: ${nextLabel} ${nextSegment.percent}% → ${nextLoad}`, 20, 78);
-                    } else {
-                        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                        ctx.fillText(`🏁 Poslední segment`, 20, 78);
-                    }
-
-                    // Zbývající čas do konce
-                    const remainingTime = trackPoints.value.length - cursorIndex.value;
-                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-                    ctx.fillText(`⏳ Zbývá: ${formatTime(remainingTime)}`, 20, 96);
+                // Legenda barev (pravý horní roh) - jen při debug
+                if (showDebug.value) {
+                    const legendX = width - 130;
+                    const legendY = 8;
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+                    ctx.fillRect(legendX - 6, legendY - 2, 132, 56);
+                    ctx.font = '9px sans-serif';
+                    const legendItems = [
+                        { color: getSlopeColor(-5), label: 'Sjezd' },
+                        { color: getSlopeColor(0), label: 'Rovina' },
+                        { color: getSlopeColor(5), label: 'Stoupání' },
+                        { color: getSlopeColor(12), label: 'Prudké' }
+                    ];
+                    legendItems.forEach((item, i) => {
+                        const ly = legendY + 4 + i * 13;
+                        ctx.fillStyle = item.color;
+                        ctx.fillRect(legendX, ly, 10, 10);
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        ctx.fillText(item.label, legendX + 16, ly + 9);
+                    });
                 }
             }
 
@@ -2066,18 +2426,20 @@
                 // Načtení RPM z Kettleru
                 await fetchRpmFromKettler();
 
-                // Získání aktuálního bodu z grafu - gradient přes 10 sekund pro stabilnější hodnotu
-                const lookAhead = 10;
-                const currentPoint = trackPoints.value[cursorIndex.value];
-                const futureIndex = Math.min(cursorIndex.value + lookAhead, trackPoints.value.length - 1);
-                const futurePoint = trackPoints.value[futureIndex];
+                // Sbírání RPM vzorků pro historii
+                if (rpm.value > 0) rpmSamples.push(rpm.value);
 
-                // Update Incline (stoupání = rozdíl výšek přepočtený na %)
-                // V generateTrack ukládáme: slope / 4, takže pro zpětný převod násobíme 4
-                // (futurePoint - currentPoint) = slopeVal * lookAhead, kde slopeVal = realSlope / 4
-                // realSlope = (futurePoint - currentPoint) / lookAhead * 4
-                const slope = (futurePoint - currentPoint) / lookAhead * 4;
-                incline.value = Math.round(Math.max(minIncline.value, Math.min(maxIncline.value, slope)));
+                // Výpočet ujeté vzdálenosti (RPM -> m/s -> přičíst za 1s)
+                // Obvod kola rotopidu ~2.1m, převodový poměr ~1
+                if (rpm.value > 0) {
+                    const wheelCircumference = 2.1; // metrů
+                    const metersPerSecond = (rpm.value / 60) * wheelCircumference;
+                    totalDistanceMeters.value += metersPerSecond;
+                }
+
+                // Sklon přímo z předpočítaného pole - konzistentní s grafem
+                const actualSlope = trackSlopes.value[cursorIndex.value] || 0;
+                incline.value = Math.max(minIncline.value, Math.min(maxIncline.value, actualSlope));
 
                 // Update Load - lineární mapování z [minIncline, maxIncline] na [minLoad, maxLoad]
                 let baseLoad;
@@ -2128,6 +2490,7 @@
                     isFinished.value = true;
                     pauseVideo();
                     releaseWakeLock();
+                    saveWorkoutToHistory();
                     console.log('Jízda dokončena!');
                 }
 
@@ -2142,7 +2505,9 @@
                 load.value = 15;
                 cursorIndex.value = 0;
                 isFinished.value = false;
+                totalDistanceMeters.value = 0;
                 zeroRpmCount = 0;
+                rpmSamples = [];
                 drawTrack();
             }
 
@@ -2160,6 +2525,7 @@
                 // Načtení video historie a uložených tratí
                 loadVideoHistory();
                 loadSavedTracks();
+                loadWorkoutHistory();
 
                 // Načtení YouTube IFrame API
                 const tag = document.createElement('script');
@@ -2221,6 +2587,7 @@
                 loadOffset,
                 increaseLoad,
                 decreaseLoad,
+                distanceKm,
                 rpmAnimating,
                 inclineAnimating,
                 loadAnimating,
@@ -2250,11 +2617,18 @@
                 zoomOut,
                 scrollTrack,
                 seekToPosition,
+                onTouchStart,
+                onTouchMove,
+                onTouchEnd,
                 generateTrack,
                 resetValues,
                 formatTime,
                 isFinished,
                 toggleFullscreen,
+
+                // Debug
+                showDebug,
+                debugInfo,
 
                 // Nové
                 trackPreset,
@@ -2265,7 +2639,10 @@
                 savedTracks,
                 saveCurrentTrack,
                 loadSavedTrack,
-                deleteSavedTrack
+                deleteSavedTrack,
+                workoutHistory,
+                deleteWorkout,
+                formatWorkoutDate
             };
         }
     }).mount('#app');
